@@ -1,4 +1,5 @@
 body {
+  position: relative; 
   background-color: #1C85D1;
   color: #FFF;
   font-family: 'Inter', sans-serif;
@@ -25,20 +26,24 @@ nav li {
 nav a {
   color: #FFF;
   text-decoration: none;
-  font-size: 15px;
-}
-
-h1 {
   font-size: 20px;
-  margin-bottom: 20px;
 }
 
 select, input, button {
   font-family: 'Inter', sans-serif;
   padding: 10px;
-  margin: 10px;
+  margin: 20px;
   border-radius: 4px;
   border: none;
+}
+
+nav {
+  position: absolute; 
+  bottom: 0;          
+  left: 50%;       
+  transform: translateX(-50%); 
+  width: 90%;  
+  margin-bottom: 20px;      
 }
 
 select, button {
@@ -59,11 +64,18 @@ ul li {
   width: 200px;
   height: 200px;
   display: flex;
+
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin: 20px 0;
+  justify-content: center; 
+  border:solid #FFF;
+  border-radius: 50%;  
+  color: white;  
+  font-size: 50px;  
+  text-align: center;  
+  margin: 20px;
+  border-width: 10px; 
 }
+
 
 .date-info {
   width: 265px;
@@ -71,4 +83,33 @@ ul li {
   flex-shrink: 0;
   font-size: 15px;
   margin-bottom: 20px;
+}
+
+.mainconteiner {
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  flex-direction: column;
+  margin-bottom: 50px;
+}
+
+
+
+.inputcontainer {
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  flex-direction: column;
+}
+
+
+
+.start {
+  width: 100px;
+  height: 35px;
+  font-family: 'Inter', sans-serif;
+  padding: 10px;
+  margin: 20px;
+  border-radius: 4px;
+  border: none;
 }

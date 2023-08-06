@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import TimerWithLocalStorage from "@/app/components/TimerWithLocalStorage";
-import CategorySelectorWithLocalStorage from "@/app/components/CategorySelectorWithLocalStorage";
 
 function Home() {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -19,9 +18,6 @@ function Home() {
         </ul>
       </nav>
 
-      <CategorySelectorWithLocalStorage
-        onCategoryChange={setSelectedCategory}
-      />
       <TimerWithLocalStorage selectedCategory={selectedCategory} />
     </div>
   );
