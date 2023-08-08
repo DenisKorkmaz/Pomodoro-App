@@ -1,6 +1,13 @@
 import Link from 'next/link';
 import useLocalStorageState from 'use-local-storage-state';
 
+const secondsToHoursMinutes = (seconds) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  return { hours, minutes };
+};
+
 export default function WorkLogPage() {
   const [workLog, setWorkLog] = useLocalStorageState('workLog', {});
 
@@ -23,11 +30,14 @@ export default function WorkLogPage() {
           {Object.entries(data).map(([week, weekData]) => (
             <div key={week}>
               <h3>Week: {week}</h3>
-              {Object.entries(weekData).map(([category, timeSpent]) => (
-                <p key={category}>
-                  You have spent {timeSpent} seconds on {category}.
-                </p>
-              ))}
+              {Object.entries(weekData).map(([category, timeSpent]) => {
+                const { hours, minutes } = secondsToHoursMinutes(timeSpent);
+                return (
+                  <p key={category}>
+                    You have spent {hours} hours and {minutes} minutes on {category}.
+                  </p>
+                );
+              })}
             </div>
           ))}
         </div>
