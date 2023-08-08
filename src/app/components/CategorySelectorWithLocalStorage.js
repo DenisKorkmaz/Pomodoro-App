@@ -5,6 +5,7 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
   const [categories, setCategories] = useLocalStorageState("categories", [
     "coding",
     "work",
+    "Matura",
   ]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
