@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import CategorySelectorWithLocalStorage from "./CategorySelectorWithLocalStorage";
 
-function TimerWithLocalStorage({ selectedCategory }) {
+function TimerWithLocalStorage() {
+
   const [timerDuration, setTimerDuration] = useState(25);
   const [breakDuration, setBreakDuration] = useState(5);
   const [seconds, setSeconds] = useState(timerDuration * 60);
   const [isActive, setIsActive] = useState(false);
   const [onBreak, setOnBreak] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const beepAudio = useRef(null);
 
   useEffect(() => {
@@ -22,7 +24,6 @@ function TimerWithLocalStorage({ selectedCategory }) {
   useEffect(() => {
     setSeconds(timerDuration * 60);
   }, [timerDuration]);
-
   useEffect(() => {
     if (isActive && seconds <= 1 && !onBreak) {
       logWorkDuration(timerDuration * 60, selectedCategory);
@@ -82,14 +83,24 @@ function TimerWithLocalStorage({ selectedCategory }) {
     setIsActive(!isActive);
   };
 
+
+  const handleCategoryChange = (newCategory) => {
+    console.log(`Selected Category: ${newCategory}`);
+    setSelectedCategory(newCategory);
+  };
+
   return (
-    <div className="mainconteiner">
+    <div className="maincontainer">
       <div className="timer-circle">
         {Math.floor(seconds / 60)}:{("0" + (seconds % 60)).slice(-2)}{" "}
         {onBreak ? "Break" : ""}
       </div>
-      <CategorySelectorWithLocalStorage />
       <div className="inputcontainer">
+      <CategorySelectorWithLocalStorage 
+        onCategoryChange={handleCategoryChange} 
+        selectedCategory={selectedCategory} 
+      />
+     
         <input
           type="number"
           placeholder="Set Timer Duration"
@@ -102,11 +113,12 @@ function TimerWithLocalStorage({ selectedCategory }) {
           value={breakDuration}
           onChange={(e) => setBreakDuration(Math.max(1, e.target.value))}
         />
-      </div>
-
-      <button className="start" onClick={toggleTimer}>
+        <button className="start" onClick={toggleTimer}>
         {isActive ? "Pause" : "Start"}
       </button>
+      </div>
+
+      
     </div>
   );
 }

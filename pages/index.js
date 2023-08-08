@@ -18,7 +18,9 @@ function Home() {
         </ul>
       </nav>
 
-      <TimerWithLocalStorage selectedCategory={selectedCategory} />
+      <TimerWithLocalStorage 
+        selectedCategory={selectedCategory} 
+        setSelectedCategory={setSelectedCategory} />
     </div>
   );
 }

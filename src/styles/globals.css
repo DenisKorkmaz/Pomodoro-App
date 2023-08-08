@@ -43,7 +43,7 @@ nav {
   left: 50%;       
   transform: translateX(-50%); 
   width: 90%;  
-  margin-bottom: 20px;      
+  margin-bottom: 0px;      
 }
 
 select, button {
@@ -100,6 +100,8 @@ ul li {
   align-items: center; 
   justify-content: center; 
   flex-direction: column;
+  margin-bottom: 50px;
+
 }
 
 

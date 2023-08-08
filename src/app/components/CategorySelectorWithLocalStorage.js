@@ -17,30 +17,33 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
     localStorage.setItem("categories", JSON.stringify(categories));
   }, [categories]);
 
-  const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value);
+  const handleCategoryChange = (newCategory) => {
+    setSelectedCategory(newCategory);
 
-    if (event.target.value === "addNew") {
+    if (newCategory === "addNew") {
       setShowAddNew(true);
     } else {
       setShowAddNew(false);
-      onCategoryChange(event.target.value);
+      onCategoryChange(newCategory);
     }
   };
-
   const addCustomCategory = () => {
     if (customCategory && !categories.includes(customCategory)) {
-      setCategories([...categories, customCategory]);
+      setCategories((prevCategories) => [...prevCategories, customCategory]);
       setSelectedCategory(customCategory);
-      onCategoryChange(customCategory);
-      setShowAddNew(false);
       setCustomCategory("");
+      setShowAddNew(false);
     }
   };
 
   return (
     <div>
-      <select value={selectedCategory} onChange={handleCategoryChange}>
+      <select
+        value={selectedCategory}
+        onChange={(e) => handleCategoryChange(e.target.value)}>
+        <option disabled value="">
+          Choose category
+        </option>
         {categories.map((category, index) => (
           <option key={index} value={category}>
             {category}
@@ -56,13 +59,12 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
             type="text"
             value={customCategory}
             onChange={(e) => setCustomCategory(e.target.value)}
-            placeholder="Enter a new category"
+            placeholder="Type a new category here"
           />
-          <button onClick={addCustomCategory}>Add</button>
+          <button onClick={addCustomCategory}>Add Category</button>
         </div>
       )}
     </div>
   );
 }
-
 export default CategorySelectorWithLocalStorage;
