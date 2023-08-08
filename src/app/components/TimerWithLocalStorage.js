@@ -1,15 +1,47 @@
 import React, { useState, useEffect, useRef } from "react";
 import CategorySelectorWithLocalStorage from "./CategorySelectorWithLocalStorage";
+import useLocalStorageState from 'use-local-storage-state';
 
 function TimerWithLocalStorage() {
-
-  const [timerDuration, setTimerDuration] = useState(25);
-  const [breakDuration, setBreakDuration] = useState(5);
+  const [timerDuration, setTimerDuration] = useLocalStorageState('timerDuration', 25);
+  const [breakDuration, setBreakDuration] = useLocalStorageState('breakDuration', 5);
   const [seconds, setSeconds] = useState(timerDuration * 60);
   const [isActive, setIsActive] = useState(false);
   const [onBreak, setOnBreak] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [workLog, setWorkLog] = useLocalStorageState('workLog', {});
   const beepAudio = useRef(null);
+
+  function getCurrentWeekNumber() {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    
+    const week1 = new Date(date.getFullYear(), 0, 4);
+    return 1 + Math.round(((date.getTime() - week1.getTime()) / (7 * 24 * 60 * 60 * 1000)));
+  }
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const updateWorkLog = () => {
+    if (onBreak) return;
+
+    const currentYear = new Date().getFullYear();
+    const currentWeek = getCurrentWeekNumber();
+
+    const savedWorkLog = { ...workLog };
+    const yearData = savedWorkLog[currentYear] || {};
+    const weekData = yearData[currentWeek] || {};
+    
+    weekData[selectedCategory] = (weekData[selectedCategory] || 0) + timerDuration * 60;
+    yearData[currentWeek] = weekData;
+    savedWorkLog[currentYear] = yearData;
+
+    setWorkLog(savedWorkLog);
+  }
 
   useEffect(() => {
     beepAudio.current = new Audio("./sound/sound.mp3");
@@ -17,76 +49,25 @@ function TimerWithLocalStorage() {
 
   useEffect(() => {
     if (seconds === 0 && isActive && beepAudio.current) {
-      beepAudio.current.play();
+        beepAudio.current.play();
+        updateWorkLog();
+        setOnBreak(!onBreak);
+        setSeconds(onBreak ? timerDuration * 60 : breakDuration * 60);    
     }
-  }, [seconds, isActive]);
+  }, [seconds, isActive, timerDuration, breakDuration, onBreak]);
 
   useEffect(() => {
-    setSeconds(timerDuration * 60);
-  }, [timerDuration]);
-  useEffect(() => {
-    if (isActive && seconds <= 1 && !onBreak) {
-      logWorkDuration(timerDuration * 60, selectedCategory);
-      setOnBreak(true);
-    }
-  }, [isActive, seconds, onBreak]);
-
-  const logWorkDuration = (duration, category) => {
-    let currentDate = new Date();
-    let currentWeekNumber = getCurrentWeekNumber(currentDate);
-    let currentYear = currentDate.getFullYear();
-
-    let workLog = JSON.parse(localStorage.getItem("workLog") || "{}");
-    if (!workLog[currentYear]) {
-      workLog[currentYear] = {};
-    }
-    if (!workLog[currentYear][currentWeekNumber]) {
-      workLog[currentYear][currentWeekNumber] = {};
-    }
-    workLog[currentYear][currentWeekNumber][category] =
-      (workLog[currentYear][currentWeekNumber][category] || 0) + duration;
-    localStorage.setItem("workLog", JSON.stringify(workLog));
-  };
-
-  const getCurrentWeekNumber = (date) => {
-    const startOfYear = new Date(date.getFullYear(), 0, 1);
-    const dayOfYear = (date - startOfYear + 86400000) / 86400000;
-    return Math.ceil(dayOfYear / 7);
-  };
-
-  useEffect(() => {
-    let interval;
-    if (isActive && seconds > 0) {
-      interval = setInterval(() => {
-        setSeconds((prevSeconds) => prevSeconds - 1);
+    if (isActive) {
+      const interval = setInterval(() => {
+        setSeconds(prev => prev - 1);
       }, 1000);
-    } else if (isActive && seconds <= 0) {
-      if (onBreak) {
-        setSeconds(timerDuration * 60);
-        setOnBreak(false);
-      } else {
-        setSeconds(breakDuration * 60);
-        setOnBreak(true);
-      }
-    } else {
-      clearInterval(interval);
+      
+      return () => clearInterval(interval);
     }
-    return () => clearInterval(interval);
-  }, [isActive, seconds, onBreak, timerDuration, breakDuration]);
-
-  useEffect(() => {
-    localStorage.setItem("timerDuration", timerDuration);
-    localStorage.setItem("breakDuration", breakDuration);
-  }, [timerDuration, breakDuration]);
+  }, [isActive]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
-  };
-
-
-  const handleCategoryChange = (newCategory) => {
-    console.log(`Selected Category: ${newCategory}`);
-    setSelectedCategory(newCategory);
   };
 
   return (
@@ -96,29 +77,34 @@ function TimerWithLocalStorage() {
         {onBreak ? "Break" : ""}
       </div>
       <div className="inputcontainer">
-      <CategorySelectorWithLocalStorage 
-        onCategoryChange={handleCategoryChange} 
-        selectedCategory={selectedCategory} 
-      />
-     
+        <CategorySelectorWithLocalStorage 
+          onCategoryChange={handleCategoryChange} 
+          selectedCategory={selectedCategory} 
+        />
         <input
           type="number"
           placeholder="Set Timer Duration"
           value={timerDuration}
-          onChange={(e) => setTimerDuration(Math.max(1, e.target.value))}
+          onChange={(e) => {
+            const newDuration = Math.max(1, e.target.value);
+            setTimerDuration(newDuration);
+            setSeconds(newDuration * 60);
+          }}
         />
         <input
           placeholder="Set Break Duration"
           type="number"
           value={breakDuration}
-          onChange={(e) => setBreakDuration(Math.max(1, e.target.value))}
+          onChange={(e) => {
+            const newBreakDuration = Math.max(1, e.target.value);
+            setBreakDuration(newBreakDuration);
+            if (onBreak) setSeconds(newBreakDuration * 60);
+          }}
         />
         <button className="start" onClick={toggleTimer}>
-        {isActive ? "Pause" : "Start"}
-      </button>
+          {isActive ? "Break" : "Start"}
+        </button>
       </div>
-
-      
     </div>
   );
 }

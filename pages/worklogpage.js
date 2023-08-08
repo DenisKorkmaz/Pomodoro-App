@@ -1,13 +1,8 @@
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import useLocalStorageState from 'use-local-storage-state';
 
 export default function WorkLogPage() {
-  const [workLog, setWorkLog] = useState({});
-
-  useEffect(() => {
-    const savedWorkLog = JSON.parse(localStorage.getItem('workLog')) || {};
-    setWorkLog(savedWorkLog);
-  }, []);
+  const [workLog, setWorkLog] = useLocalStorageState('workLog', {});
 
   return (
     <div>
@@ -22,7 +17,7 @@ export default function WorkLogPage() {
         </ul>
       </nav>
       <h1>Your Work Log</h1>
-      {Object.entries(workLog).map(([year, data]) => (
+      {workLog && Object.entries(workLog).map(([year, data]) => (
         <div key={year}>
           <h2>Year: {year}</h2>
           {Object.entries(data).map(([week, weekData]) => (

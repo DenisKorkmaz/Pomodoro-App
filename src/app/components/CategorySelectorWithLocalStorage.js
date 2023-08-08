@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import useLocalStorageState from "use-local-storage-state";
 
 function CategorySelectorWithLocalStorage({ onCategoryChange }) {
-  const [categories, setCategories] = useState(["coding", "work"]);
+  const [categories, setCategories] = useLocalStorageState("categories", [
+    "coding",
+    "work",
+  ]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
   const [showAddNew, setShowAddNew] = useState(false);
 
-  useEffect(() => {
-    const savedCategories = localStorage.getItem("categories");
-    if (savedCategories) {
-      setCategories(JSON.parse(savedCategories));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("categories", JSON.stringify(categories));
-  }, [categories]);
-
   const handleCategoryChange = (newCategory) => {
     setSelectedCategory(newCategory);
-
     if (newCategory === "addNew") {
       setShowAddNew(true);
     } else {
@@ -27,6 +19,7 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
       onCategoryChange(newCategory);
     }
   };
+
   const addCustomCategory = () => {
     if (customCategory && !categories.includes(customCategory)) {
       setCategories((prevCategories) => [...prevCategories, customCategory]);
@@ -44,14 +37,15 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
         <option disabled value="">
           Choose category
         </option>
-        {categories.map((category, index) => (
-          <option key={index} value={category}>
-            {category}
-          </option>
-        ))}
+        {categories &&
+          categories.map((category, index) => (
+            <option key={index} value={category}>
+              {category}
+            </option>
+          ))}
+
         <option value="addNew">Add New Category</option>
       </select>
-
       {showAddNew && (
         <div>
           <h3>Add a custom category</h3>
@@ -67,4 +61,5 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
     </div>
   );
 }
+
 export default CategorySelectorWithLocalStorage;
