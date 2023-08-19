@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useLocalStorageState from "use-local-storage-state";
 
 function CategorySelectorWithLocalStorage({ onCategoryChange }) {
-  const [categories, setCategories] = useLocalStorageState("categories", [
-    "coding",
-    "work",
-    "Matura",
-  ]);
+  const [categories, setCategories] = useLocalStorageState("categories", []);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
   const [showAddNew, setShowAddNew] = useState(false);
+
+  useEffect(() => {
+    if (!categories || categories.length === 0) {
+      setCategories(["work"]);
+    }
+  }, []);
+
 
   const handleCategoryChange = (newCategory) => {
     setSelectedCategory(newCategory);
@@ -27,6 +30,7 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
       setSelectedCategory(customCategory);
       setCustomCategory("");
       setShowAddNew(false);
+      console.log("Categories:", categories);
     }
   };
 
