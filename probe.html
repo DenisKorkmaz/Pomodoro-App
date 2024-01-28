@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsives Sidebar-Beispiel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-4 col-lg-3 bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Dashboard</a>
+                        </li>
+                        <!-- Weitere Menüpunkte hier -->
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Hauptinhalt -->
+            <main role="main" class="col-md-8 ml-sm-auto col-lg-9 px-4">
+                <h1 class="mt-4">Hauptinhalt</h1>
+                <button class="btn btn-primary" id="sidebarToggle">Toggle Sidebar</button>
+                <!-- Ihr Inhalt hier -->
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap und jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.5/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#sidebarToggle').on('click', function () {
+                $('#sidebar').toggle();
+            });
+        });
+    </script>
+</body>
+</html>

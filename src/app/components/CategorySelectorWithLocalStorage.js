@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useLocalStorageState from "use-local-storage-state";
 
 function CategorySelectorWithLocalStorage({ onCategoryChange }) {
-  const [categories, setCategories] = useLocalStorageState("categories", []);
+  const [categories, setCategories] = useLocalStorageState("categories", ["work"]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
   const [showAddNew, setShowAddNew] = useState(false);
-
-  useEffect(() => {
-    if (!categories || categories.length === 0) {
-      setCategories(["work"]);
-    }
-  }, []);
-
 
   const handleCategoryChange = (newCategory) => {
     setSelectedCategory(newCategory);
@@ -26,11 +19,12 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
 
   const addCustomCategory = () => {
     if (customCategory && !categories.includes(customCategory)) {
-      setCategories((prevCategories) => [...prevCategories, customCategory]);
+      const newCategories = [...categories, customCategory];
+      setCategories(newCategories);
       setSelectedCategory(customCategory);
       setCustomCategory("");
       setShowAddNew(false);
-      console.log("Categories:", categories);
+      onCategoryChange(customCategory);
     }
   };
 
@@ -42,13 +36,11 @@ function CategorySelectorWithLocalStorage({ onCategoryChange }) {
         <option disabled value="">
           Choose category
         </option>
-        {categories &&
-          categories.map((category, index) => (
-            <option key={index} value={category}>
-              {category}
-            </option>
-          ))}
-
+        {Array.isArray(categories) && categories.map((category, index) => (
+          <option key={index} value={category}>
+            {category}
+          </option>
+        ))}
         <option value="addNew">Add New Category</option>
       </select>
       {showAddNew && (
